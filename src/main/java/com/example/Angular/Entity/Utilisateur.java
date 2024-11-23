@@ -1,5 +1,6 @@
 package com.example.Angular.Entity;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -21,9 +22,12 @@ import lombok.Data;
 @Entity
 @Table(name = "utilisateur")
 public class Utilisateur implements UserDetails {
+    private static final int PASSWORD_VALIDITY_PERIOD_MONTHS = 6; // Durée de validité des mots de passe (6 mois)
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id;
+
     private String nom;
 
     @ManyToOne
@@ -31,14 +35,35 @@ public class Utilisateur implements UserDetails {
     private Services service;
 
     private String prenom;
+
+    @Column(unique = true, nullable = false)
     private String email;
+
+    @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false)
     private Role role;
 
-    // Champ enabled persistant, visible dans la base de données
     @Column(name = "enabled", nullable = false)
     private boolean enabled;
 
+    // Champ pour gérer l'expiration du mot de passe
+    @Column(name = "password_expiry_date")
+    private LocalDate passwordExpiryDate;
+
+    // Méthode pour vérifier si le mot de passe est expiré
+    public boolean isPasswordExpired() {
+        return LocalDate.now().isAfter(passwordExpiryDate);
+    }
+
+    // Mise à jour de la date d'expiration lors d'une modification du mot de passe
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
+        this.passwordExpiryDate = LocalDate.now().plusMonths(PASSWORD_VALIDITY_PERIOD_MONTHS);
+    }
+
+    // Implémentation des méthodes UserDetails
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
@@ -60,16 +85,7 @@ public class Utilisateur implements UserDetails {
     }
 
     @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
     public boolean isEnabled() {
         return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 }

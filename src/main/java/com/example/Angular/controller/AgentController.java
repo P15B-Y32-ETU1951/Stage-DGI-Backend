@@ -18,6 +18,7 @@ import com.example.Angular.repository.RejetRepository;
 import com.example.Angular.repository.UtilisateurRepository;
 import com.example.Angular.service.DemandeService;
 import com.example.Angular.service.RessourceService;
+import com.example.Angular.service.StatutService;
 
 @RestController
 @RequestMapping("/api/v1/AGENT")
@@ -35,6 +36,8 @@ public class AgentController {
 
     @Autowired
     private RessourceService ressourceService;
+    @Autowired
+    private StatutService statutService;
 
     @GetMapping("/userinfo")
     public ResponseEntity<Utilisateur> userInfo() {
@@ -72,6 +75,11 @@ public class AgentController {
     @GetMapping("/ressource/travaux/{id}")
     public ResponseEntity<?> getRessourcesByTravaux(@PathVariable("id") int id_Travaux) {
         return ResponseEntity.ok(ressourceService.findAllByTravauxId(id_Travaux));
+    }
+
+    @GetMapping("/statut/all")
+    public ResponseEntity<?> getStatut() {
+        return ResponseEntity.ok(statutService.getAllStatut());
     }
 
 }

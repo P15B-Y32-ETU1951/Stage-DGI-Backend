@@ -1,21 +1,28 @@
 package com.example.Angular.service;
 
 import java.security.SecureRandom;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.token.Token;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.example.Angular.Entity.ConfirmationToken;
+import com.example.Angular.Entity.PasswordValidator;
+import com.example.Angular.Entity.Role;
 import com.example.Angular.Entity.Services;
 import com.example.Angular.Entity.Utilisateur;
 import com.example.Angular.dto.JwtAuthenticationResponse;
+import com.example.Angular.dto.PasswordWordRequest;
 import com.example.Angular.dto.RefreshTokenRequest;
 import com.example.Angular.dto.SignInRequest;
 import com.example.Angular.dto.SignUpRequest;
@@ -44,6 +51,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final EmailService emailService;
 
     private final ServiceRepository serviceRepository;
+    private final CaptchaService captchaService;
 
     public Utilisateur signup(SignUpRequest signUpRequest) {
         try {
@@ -57,7 +65,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             utilisateur.setNom(signUpRequest.getNom());
             utilisateur.setPrenom(signUpRequest.getPrenom());
             utilisateur.setRole(signUpRequest.getRole());
-            utilisateur.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
+            if (signUpRequest.getService() == 3) {
+                utilisateur.setRole(Role.DPR_SAF);
+            }
+            System.out.println(PasswordValidator.isPasswordComplex(signUpRequest.getPassword()) + ",,,. "
+                    + PasswordValidator.isPredictable(signUpRequest.getPassword()));
+            if (PasswordValidator.isPasswordComplex(signUpRequest.getPassword()) == true
+                    && PasswordValidator.isPredictable(signUpRequest.getPassword()) == false) {
+                utilisateur.updatePassword(passwordEncoder.encode(signUpRequest.getPassword()));
+            } else {
+                System.err.println("Invalid password");
+                return null;
+            }
+
             Services services = serviceRepository.findById(signUpRequest.getService()).get();
             utilisateur.setService(services);
             utilisateurRepository.save(utilisateur);
@@ -80,11 +100,44 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     }
 
+    public Utilisateur changepassword(PasswordWordRequest signUpRequest) {
+        // Vérifie si un utilisateur avec cet email existe déjà
+        Utilisateur user = utilisateurRepository.findById(signUpRequest.getId()).get();
+        user.updatePassword(passwordEncoder.encode(signUpRequest.getPassword()));
+        return utilisateurRepository.save(user);
+    }
+
     public JwtAuthenticationResponse signin(SignInRequest signInRequest) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(signInRequest.getEmail(), signInRequest.getPassword()));
         var user = utilisateurRepository.findByEmail(signInRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
+
+        boolean isCaptchaValid = captchaService.validateCaptcha(signInRequest.getCaptcha());
+        System.out.println("isCaptchaValid????????????????" + isCaptchaValid);
+        if (!isCaptchaValid) {
+            System.out.println(signInRequest.getCaptcha());
+            System.out.println("isCaptchaValid????????????????" + isCaptchaValid);
+            System.err.println("Invalid captcha");
+        }
+
+        // Exemple de logique d'authentification (à adapter selon vos besoins)
+        // Vérification si le mot de passe a expiré
+        if (user.getPasswordExpiryDate() != null && user.getPasswordExpiryDate().isBefore(LocalDate.now())) {
+            // Lancer une exception ou retourner une réponse spécifique
+            var jwt = jwtservice.generateToken(user);
+            var refreshToken = jwtservice.generateRefreshToken(new HashMap<>(), user);
+
+            JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
+            jwtAuthenticationResponse.setToken(jwt);
+            jwtAuthenticationResponse.setRefreshToken(refreshToken);
+            jwtAuthenticationResponse.setRole(user.getRole().name());
+            jwtAuthenticationResponse.setEnabled(user.isEnabled());
+            jwtAuthenticationResponse.setPasswordstate(true);
+            jwtAuthenticationResponse.setId(user.getId());
+            System.out.println("mdp expired +++++++++++++++++");
+            return jwtAuthenticationResponse;
+        }
 
         var jwt = jwtservice.generateToken(user);
         var refreshToken = jwtservice.generateRefreshToken(new HashMap<>(), user);
@@ -94,6 +147,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         jwtAuthenticationResponse.setRefreshToken(refreshToken);
         jwtAuthenticationResponse.setRole(user.getRole().name());
         jwtAuthenticationResponse.setEnabled(user.isEnabled());
+        jwtAuthenticationResponse.setPasswordstate(false);
+        System.out.println("mdp not expired +++++++++++++++++");
         return jwtAuthenticationResponse;
 
     }

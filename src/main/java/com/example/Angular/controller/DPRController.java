@@ -1,22 +1,30 @@
 package com.example.Angular.controller;
 
 import java.time.LocalDateTime;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.Resource;
 
 import com.example.Angular.Entity.Demande;
 import com.example.Angular.Entity.Notif;
 import com.example.Angular.Entity.Planification;
+import com.example.Angular.Entity.Rapport;
 import com.example.Angular.Entity.Rejet;
 import com.example.Angular.Entity.Ressource;
 import com.example.Angular.Entity.RessourceTravaux;
@@ -25,11 +33,13 @@ import com.example.Angular.Entity.StatutDemande;
 import com.example.Angular.Entity.Travaux;
 import com.example.Angular.dto.ApprovisionDTO;
 import com.example.Angular.dto.PlanificationRequest;
+import com.example.Angular.dto.RapportRequest;
 import com.example.Angular.dto.RejectRequest;
 import com.example.Angular.dto.RessourceDTO;
 import com.example.Angular.dto.StatutDemandeRequest;
 import com.example.Angular.repository.DemandeRepository;
 import com.example.Angular.repository.PlanificationRepository;
+import com.example.Angular.repository.RapportRepository;
 import com.example.Angular.repository.RejetRepository;
 import com.example.Angular.repository.RessourceTravauxRepository;
 import com.example.Angular.repository.StatutDemandeRepository;
@@ -37,6 +47,7 @@ import com.example.Angular.repository.TravauxRepository;
 import com.example.Angular.service.DemandeService;
 import com.example.Angular.service.NotifService;
 import com.example.Angular.service.PlanificationService;
+import com.example.Angular.service.RapportService;
 import com.example.Angular.service.RessourceService;
 import com.example.Angular.service.StatutService;
 
@@ -71,6 +82,12 @@ public class DPRController {
 
     @Autowired
     NotifService notifService;
+
+    @Autowired
+    RapportService rapportService;
+
+    @Autowired
+    private RapportRepository rapportRepository;
 
     @GetMapping("/hello")
     public ResponseEntity<String> hello() {
@@ -217,4 +234,21 @@ public class DPRController {
         return ResponseEntity.ok(demandeRepository.findAll());
     }
 
+    @PostMapping("/rapport")
+    public ResponseEntity<?> uploadRapport(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("id") int demandeId) {
+        return rapportService.uploadRapport(file, demandeId);
+
+    }
+
+    @GetMapping("/download/{id}")
+    public ResponseEntity<Resource> downloadRapport(@PathVariable int id) {
+        return rapportService.downloadRapport(id);
+    }
+
+    @GetMapping("/statut/all")
+    public ResponseEntity<?> getStatut() {
+        return ResponseEntity.ok(statutService.getAllStatut());
+    }
 }

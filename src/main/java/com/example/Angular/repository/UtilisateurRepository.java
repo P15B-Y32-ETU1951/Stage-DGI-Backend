@@ -1,5 +1,6 @@
 package com.example.Angular.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,5 +12,5 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Intege
 
     Optional<Utilisateur> findByEmail(String email);
 
-    Utilisateur findByRole(Role role);
+    List<Utilisateur> findByRole(Role role);
 }

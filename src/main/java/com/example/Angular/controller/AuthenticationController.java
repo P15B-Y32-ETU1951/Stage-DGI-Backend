@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,8 +22,8 @@ import com.example.Angular.Entity.InvalidToken;
 import com.example.Angular.Entity.Ressource;
 import com.example.Angular.Entity.Services;
 import com.example.Angular.Entity.Utilisateur;
-import com.example.Angular.config.JwtAuthenticationFilter;
 import com.example.Angular.dto.JwtAuthenticationResponse;
+import com.example.Angular.dto.PasswordWordRequest;
 import com.example.Angular.dto.RefreshTokenRequest;
 import com.example.Angular.dto.SignInRequest;
 import com.example.Angular.dto.SignUpRequest;
@@ -34,7 +35,6 @@ import com.example.Angular.service.AuthenticationService;
 import com.example.Angular.service.RessourceService;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -50,6 +50,8 @@ public class AuthenticationController {
     private ServiceRepository serviceRepository;
     @Autowired
     private RessourceService ressourceService;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignUpRequest signUpRequest) {
@@ -66,9 +68,16 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changepassword(@RequestBody PasswordWordRequest signUpRequest) {
+        // Vérifie si un utilisateur avec cet email existe déjà
+        Utilisateur user = authenticationService.changepassword(signUpRequest);
+        return ResponseEntity.ok(user);
+    }
+
     @GetMapping("/hello")
     public ResponseEntity<String> hello() {
-        return ResponseEntity.ok("Hello leniny!");
+        return ResponseEntity.ok("Hello !");
     }
 
     @PostMapping("/signin")

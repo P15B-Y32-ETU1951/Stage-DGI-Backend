@@ -8,4 +8,6 @@ public class JwtAuthenticationResponse {
     private String refreshToken;
     private String Role;
     private boolean isEnabled;
+    private boolean passwordstate;
+    private int id;
 }

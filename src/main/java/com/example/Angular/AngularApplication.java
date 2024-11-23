@@ -26,8 +26,8 @@ public class AngularApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		// TODO Auto-generated method stub
-		Utilisateur admin = utilisateurRepository.findByRole(Role.DPR_SAF);
-		if (null == admin) {
+		List<Utilisateur> admin = utilisateurRepository.findByRole(Role.DPR_SAF);
+		if (admin.isEmpty()) {
 			Utilisateur user = new Utilisateur();
 			user.setNom("DPR");
 			user.setPrenom("SAF");
@@ -78,6 +78,7 @@ public class AngularApplication implements CommandLineRunner {
 	}
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(AngularApplication.class, args);
 	}
 

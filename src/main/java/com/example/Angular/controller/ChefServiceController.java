@@ -25,6 +25,7 @@ import com.example.Angular.dto.StatutDemandeRequest;
 import com.example.Angular.repository.DemandeRepository;
 import com.example.Angular.repository.NotifRepository;
 import com.example.Angular.repository.ReclamationRepository;
+import com.example.Angular.repository.RejetRepository;
 import com.example.Angular.repository.StatutDemandeRepository;
 import com.example.Angular.repository.UtilisateurRepository;
 import com.example.Angular.service.DemandeService;
@@ -53,6 +54,8 @@ public class ChefServiceController {
     private NotifRepository notifRepository;
     @Autowired
     private ReclamationRepository reclamationRepository;
+    @Autowired
+    private RejetRepository rejetRepository;
 
     @PostMapping("/demande")
     public ResponseEntity<?> demande(@RequestBody DemandeRequest request) {
@@ -120,5 +123,16 @@ public class ChefServiceController {
 
         return ResponseEntity.ok(reclamationRepository.save(reclamation));
 
+    }
+
+    @GetMapping("/rejet/{id}")
+    public ResponseEntity<?> getRejet(@PathVariable int id) {
+        Rejet rejet = rejetRepository.findByDemande_Id(id);
+        return ResponseEntity.ok(rejet);
+    }
+
+    @GetMapping("/statut/all")
+    public ResponseEntity<?> getStatut() {
+        return ResponseEntity.ok(statutService.getAllStatut());
     }
 }
