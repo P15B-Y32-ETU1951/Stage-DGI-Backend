@@ -1,0 +1,24 @@
+/* style the navbar background and brand */
+.navbar{
+    color: #148235;
+    
+}
+
+.navbar .navbar-brand{
+    color: #fff
+}
+
+/* style the navigation links */
+.navbar .nav-link{
+    color: #fff  !important;
+    text-decoration: none !important;
+    margin-right:200px;
+}
+
+/* Add media query for smaller screens */
+@media (max-width: 576px) {
+    .navbar .nav-link{
+        margin-right: 0;
+    }
+}
+
