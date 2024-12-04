@@ -15,6 +15,7 @@ import com.example.Angular.Entity.Statut;
 import com.example.Angular.Entity.Travaux;
 import com.example.Angular.dto.PlanificationRequest;
 import com.example.Angular.dto.RessourceDTO;
+import com.example.Angular.dto.TravauxDTO;
 import com.example.Angular.repository.DemandeRepository;
 import com.example.Angular.repository.PlanificationRepository;
 import com.example.Angular.repository.RejetRepository;
@@ -66,25 +67,31 @@ public class PlanificationService {
         planification.setDateFin(request.getDateFin());
         planification.setDemande(demande);
         planificationRepository.save(planification);
-        Travaux travaux = new Travaux();
-        travaux.setDemande(demande);
-        travaux.setTotal(request.getTotal());
-        Travaux save = travauxRepository.save(travaux);
         List<RessourceTravaux> ressourceTravaux = new ArrayList<>();
-        for (RessourceDTO ressourceDTO : request.getRessources()) {
-            RessourceTravaux ressourceTravaux1 = new RessourceTravaux();
-            ressourceTravaux1.setRessource(ressourceService.findRessourceById(ressourceDTO.getId_ressource()));
-            ressourceTravaux1.setQuantite(ressourceDTO.getQuantite());
-            ressourceTravaux1.setTravaux(save);
-            ressourceTravaux.add(ressourceTravaux1);
-            Ressource res = ressourceRepository.findById(ressourceDTO.getId_ressource()).get();
-            if (res.getQuantite() == ressourceDTO.getQuantite()) {
-                res.setDispo(false);
+        for (TravauxDTO travauxDTO : request.getTravaux()) {
+            Travaux travaux = new Travaux();
+            travaux.setDemande(demande);
+            travaux.setTotal(travauxDTO.getTotal());
+            travaux.setDateDebut(travauxDTO.getDateDebut());
+            System.out.println(travaux.getDateDebut()+"+++++++++++++++++++++++++++++++++++++");
+            travaux.setDateFin(travauxDTO.getDateFin());
+              System.out.println(travaux.getDateFin()+"+++++++++++++++++++++++++++++++++++++");
+            travaux.setNom(travauxDTO.getNom());
+            Travaux save = travauxRepository.save(travaux);
+            for (RessourceDTO ressourceDTO : travauxDTO.getRessources()) {
+                RessourceTravaux ressourceTravaux1 = new RessourceTravaux();
+                ressourceTravaux1.setRessource(ressourceService.findRessourceById(ressourceDTO.getId()));
+                ressourceTravaux1.setQuantite(ressourceDTO.getQuantite());
+                ressourceTravaux1.setTravaux(save);
+                ressourceTravaux.add(ressourceTravaux1);
+                Ressource res = ressourceRepository.findById(ressourceDTO.getId()).get();
+                if (res.getQuantite() == ressourceDTO.getQuantite()) {
+                    res.setDispo(false);
+                }
+                res.setQuantite(res.getQuantite() - ressourceDTO.getQuantite());
+                ressourceRepository.save(res);
             }
-            res.setQuantite(res.getQuantite() - ressourceDTO.getQuantite());
-            ressourceRepository.save(res);
         }
-
         ressourceTravauxRepository.saveAll(ressourceTravaux);
         Statut statut = statutRepository.findById(6).get();
         demande.setStatut(statut);
@@ -96,21 +103,32 @@ public class PlanificationService {
         Demande demande = demandeService.findById(request.getId_demande());
         Planification planification = demande.getPlanification();
         planification.setDateFin(request.getDateFin());
-        demande.getTravaux().setTotal(request.getTotal() + demande.getTravaux().getTotal());
-        System.out.println(demande.getTravaux().getTotal() + "total---------------------");
+        // demande.getTravaux().setTotal(request.getTotal() +
+        // demande.getTravaux().getTotal());
+        // System.out.println(demande.getTravaux().getTotal() +
+        // "total---------------------");
         List<RessourceTravaux> ressourceTravaux = new ArrayList<>();
-        for (RessourceDTO ressourceDTO : request.getRessources()) {
-            RessourceTravaux ressourceTravaux1 = new RessourceTravaux();
-            ressourceTravaux1.setRessource(ressourceService.findRessourceById(ressourceDTO.getId_ressource()));
-            ressourceTravaux1.setQuantite(ressourceDTO.getQuantite());
-            ressourceTravaux1.setTravaux(demande.getTravaux());
-            ressourceTravaux.add(ressourceTravaux1);
-            Ressource res = ressourceRepository.findById(ressourceDTO.getId_ressource()).get();
-            if (res.getQuantite() == ressourceDTO.getQuantite()) {
-                res.setDispo(false);
+        for (TravauxDTO travauxDTO : request.getTravaux()) {
+            Travaux travaux = new Travaux();
+            travaux.setDemande(demande);
+            travaux.setTotal(travauxDTO.getTotal());
+            travaux.setDateDebut(travauxDTO.getDateDebut());
+            travaux.setDateFin(travauxDTO.getDateFin());
+            travaux.setNom(travauxDTO.getNom());
+            Travaux save = travauxRepository.save(travaux);
+            for (RessourceDTO ressourceDTO : travauxDTO.getRessources()) {
+                RessourceTravaux ressourceTravaux1 = new RessourceTravaux();
+                ressourceTravaux1.setRessource(ressourceService.findRessourceById(ressourceDTO.getId()));
+                ressourceTravaux1.setQuantite(ressourceDTO.getQuantite());
+                ressourceTravaux1.setTravaux(save);
+                ressourceTravaux.add(ressourceTravaux1);
+                Ressource res = ressourceRepository.findById(ressourceDTO.getId()).get();
+                if (res.getQuantite() == ressourceDTO.getQuantite()) {
+                    res.setDispo(false);
+                }
+                res.setQuantite(res.getQuantite() - ressourceDTO.getQuantite());
+                ressourceRepository.save(res);
             }
-            res.setQuantite(res.getQuantite() - ressourceDTO.getQuantite());
-            ressourceRepository.save(res);
         }
 
         ressourceTravauxRepository.saveAll(ressourceTravaux);

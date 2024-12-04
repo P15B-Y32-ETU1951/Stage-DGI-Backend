@@ -47,9 +47,9 @@ public class Demande {
     @JsonManagedReference
     private Planification planification;
 
-    @OneToOne(mappedBy = "demande", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "demande", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private Travaux travaux;
+    private List<Travaux> travaux;
 
     @OneToOne(mappedBy = "demande", cascade = CascadeType.ALL)
     @JsonManagedReference

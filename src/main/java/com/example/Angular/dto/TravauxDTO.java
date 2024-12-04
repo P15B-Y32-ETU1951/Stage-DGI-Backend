@@ -6,12 +6,10 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class PlanificationRequest {
-    int id_demande;
+public class TravauxDTO {
     String nom;
     LocalDate dateDebut;
     LocalDate dateFin;
-    List<TravauxDTO> travaux;
+    List<RessourceDTO> ressources;
     double total;
-
 }
