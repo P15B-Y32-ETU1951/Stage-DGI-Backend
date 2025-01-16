@@ -22,6 +22,7 @@ import com.example.Angular.Entity.InvalidToken;
 import com.example.Angular.Entity.Ressource;
 import com.example.Angular.Entity.Services;
 import com.example.Angular.Entity.Utilisateur;
+import com.example.Angular.dto.ForgotPasswordRequest;
 import com.example.Angular.dto.JwtAuthenticationResponse;
 import com.example.Angular.dto.PasswordWordRequest;
 import com.example.Angular.dto.RefreshTokenRequest;
@@ -73,6 +74,18 @@ public class AuthenticationController {
         // Vérifie si un utilisateur avec cet email existe déjà
         Utilisateur user = authenticationService.changepassword(signUpRequest);
         return ResponseEntity.ok(user);
+    }
+
+    @PostMapping("/forgot_password")
+    public ResponseEntity<?> forgotpassword(@RequestBody ForgotPasswordRequest signUpRequest) {
+        // Vérifie si un utilisateur avec cet email existe déjà
+        Utilisateur user = authenticationService.forgotpassword(signUpRequest);
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email not found");
+
     }
 
     @GetMapping("/hello")

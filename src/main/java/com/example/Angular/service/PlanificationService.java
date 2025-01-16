@@ -72,10 +72,10 @@ public class PlanificationService {
             Travaux travaux = new Travaux();
             travaux.setDemande(demande);
             travaux.setTotal(travauxDTO.getTotal());
-            travaux.setDateDebut(travauxDTO.getDateDebut());
-            System.out.println(travaux.getDateDebut()+"+++++++++++++++++++++++++++++++++++++");
-            travaux.setDateFin(travauxDTO.getDateFin());
-              System.out.println(travaux.getDateFin()+"+++++++++++++++++++++++++++++++++++++");
+            travaux.setDateDebut(travauxDTO.getDateDebut().plusDays(1));
+            System.out.println(travaux.getDateDebut() + "+++++++++++++++++++++++++++++++++++++");
+            travaux.setDateFin(travauxDTO.getDateFin().plusDays(1));
+            System.out.println(travaux.getDateFin() + "+++++++++++++++++++++++++++++++++++++");
             travaux.setNom(travauxDTO.getNom());
             Travaux save = travauxRepository.save(travaux);
             for (RessourceDTO ressourceDTO : travauxDTO.getRessources()) {
@@ -112,8 +112,8 @@ public class PlanificationService {
             Travaux travaux = new Travaux();
             travaux.setDemande(demande);
             travaux.setTotal(travauxDTO.getTotal());
-            travaux.setDateDebut(travauxDTO.getDateDebut());
-            travaux.setDateFin(travauxDTO.getDateFin());
+            travaux.setDateDebut(travauxDTO.getDateDebut().plusDays(1));
+            travaux.setDateFin(travauxDTO.getDateFin().plusDays(1));
             travaux.setNom(travauxDTO.getNom());
             Travaux save = travauxRepository.save(travaux);
             for (RessourceDTO ressourceDTO : travauxDTO.getRessources()) {

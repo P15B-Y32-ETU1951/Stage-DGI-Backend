@@ -1,6 +1,7 @@
 package com.example.Angular.service;
 
 import com.example.Angular.Entity.Utilisateur;
+import com.example.Angular.dto.ForgotPasswordRequest;
 import com.example.Angular.dto.JwtAuthenticationResponse;
 import com.example.Angular.dto.PasswordWordRequest;
 import com.example.Angular.dto.RefreshTokenRequest;
@@ -16,5 +17,7 @@ public interface AuthenticationService {
     JwtAuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest);
 
     Utilisateur changepassword(PasswordWordRequest signUpRequest);
+
+    Utilisateur forgotpassword(ForgotPasswordRequest forgotPasswordRequest);
 
 }

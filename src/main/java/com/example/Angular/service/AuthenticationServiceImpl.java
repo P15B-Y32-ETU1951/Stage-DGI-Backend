@@ -21,6 +21,7 @@ import com.example.Angular.Entity.PasswordValidator;
 import com.example.Angular.Entity.Role;
 import com.example.Angular.Entity.Services;
 import com.example.Angular.Entity.Utilisateur;
+import com.example.Angular.dto.ForgotPasswordRequest;
 import com.example.Angular.dto.JwtAuthenticationResponse;
 import com.example.Angular.dto.PasswordWordRequest;
 import com.example.Angular.dto.RefreshTokenRequest;
@@ -105,6 +106,23 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Utilisateur user = utilisateurRepository.findById(signUpRequest.getId()).get();
         user.updatePassword(passwordEncoder.encode(signUpRequest.getPassword()));
         return utilisateurRepository.save(user);
+    }
+
+    public Utilisateur forgotpassword(ForgotPasswordRequest signUpRequest) {
+
+        Utilisateur user = utilisateurRepository.findByEmail(signUpRequest.getEmail()).get();
+        if (user != null) {
+            try {
+                emailService.sendSimpleEmail(user.getEmail(), "Mot de passe oublie",
+                        "cliquez sur ce lien pour changer votre mot de passe http://localhost:3000/auth/change-password/"
+                                + user.getId());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+        return user;
+
     }
 
     public JwtAuthenticationResponse signin(SignInRequest signInRequest) {
