@@ -1,6 +1,7 @@
 package com.example.Angular.controller;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Angular.Entity.Demande;
-import com.example.Angular.Entity.Notif;
+import com.example.Angular.Entity.Notif_CHEF_SERVICE;
+import com.example.Angular.Entity.Notif_DPR_SAF;
 import com.example.Angular.Entity.Reclamation;
 import com.example.Angular.Entity.Rejet;
 import com.example.Angular.Entity.Statut;
@@ -29,6 +31,7 @@ import com.example.Angular.repository.RejetRepository;
 import com.example.Angular.repository.StatutDemandeRepository;
 import com.example.Angular.repository.UtilisateurRepository;
 import com.example.Angular.service.DemandeService;
+import com.example.Angular.service.NotifChefServiceService;
 import com.example.Angular.service.RessourceService;
 import com.example.Angular.service.StatutService;
 
@@ -56,6 +59,9 @@ public class ChefServiceController {
     private ReclamationRepository reclamationRepository;
     @Autowired
     private RejetRepository rejetRepository;
+
+    @Autowired
+    private NotifChefServiceService notifChefServiceService;
 
     @PostMapping("/demande")
     public ResponseEntity<?> demande(@RequestBody DemandeRequest request) {
@@ -92,7 +98,7 @@ public class ChefServiceController {
         stdm.setDate_changement(LocalDateTime.now());
         statutDemandeRepository.save(stdm);
         if (request.getStatut() == 2) {
-            Notif notif = new Notif();
+            Notif_DPR_SAF notif = new Notif_DPR_SAF();
             notif.setDemande(demande);
             notif.setRecent(true);
             notifRepository.save(notif);
@@ -134,5 +140,29 @@ public class ChefServiceController {
     @GetMapping("/statut/all")
     public ResponseEntity<?> getStatut() {
         return ResponseEntity.ok(statutService.getAllStatut());
+    }
+
+    @PostMapping("/rejet")
+    public ResponseEntity<?> reject(@RequestBody RejectRequest request) {
+        Rejet rejet = new Rejet();
+        Demande demande = demandeService.findById(request.getId_demande());
+        rejet.setDemande(demande);
+        rejet.setDate(LocalDateTime.now());
+        rejet.setMotif(request.getMotif());
+
+        return ResponseEntity.ok(rejetRepository.save(rejet));
+
+    }
+
+    @GetMapping("/notif")
+    public ResponseEntity<?> notif() {
+        List<Notif_CHEF_SERVICE> notifs = notifChefServiceService.getNewNotifs();
+        return ResponseEntity.ok(notifs);
+    }
+
+    @PostMapping("/notif/seen")
+    public ResponseEntity<?> seenNotif(@RequestBody List<Integer> notifs) {
+        notifChefServiceService.setSeen(notifs);
+        return ResponseEntity.ok("Notifs seen");
     }
 }

@@ -10,7 +10,7 @@ import lombok.Data;
 
 @Entity
 @Data
-public class Notif {
+public class Notif_DPR_SAF {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     int id;
@@ -19,4 +19,5 @@ public class Notif {
     @JoinColumn(name = "id_demande")
     Demande demande;
     boolean recent;
+
 }

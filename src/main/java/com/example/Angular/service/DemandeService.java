@@ -7,12 +7,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.example.Angular.Entity.Demande;
-import com.example.Angular.Entity.Notif;
+import com.example.Angular.Entity.Notif_CHEF_SERVICE;
+import com.example.Angular.Entity.Notif_DPR_SAF;
 import com.example.Angular.Entity.Services;
 import com.example.Angular.Entity.Statut;
 import com.example.Angular.Entity.Utilisateur;
 import com.example.Angular.dto.DemandeRequest;
 import com.example.Angular.repository.DemandeRepository;
+import com.example.Angular.repository.NotifChefServiceRepository;
 import com.example.Angular.repository.NotifRepository;
 import com.example.Angular.repository.ServiceRepository;
 import com.example.Angular.repository.StatutRepository;
@@ -34,6 +36,9 @@ public class DemandeService {
     @Autowired
     NotifRepository notifRepository;
 
+    @Autowired
+    NotifChefServiceRepository notifChefServiceRepository;
+
     public Demande saveDemande(DemandeRequest request) {
         Demande demande = new Demande();
         demande.setDate(request.getDate());
@@ -47,8 +52,14 @@ public class DemandeService {
         demande.setStatut(statut);
         demande.setUtilisateur(user);
         Demande d = demoRepository.save(demande);
+        if (request.getId_statut() == 1) {
+            Notif_CHEF_SERVICE notif = new Notif_CHEF_SERVICE();
+            notif.setDemande(d);
+            notif.setRecent(true);
+            notifChefServiceRepository.save(notif);
+        }
         if (request.getId_statut() == 2) {
-            Notif notif = new Notif();
+            Notif_DPR_SAF notif = new Notif_DPR_SAF();
             notif.setDemande(d);
             notif.setRecent(true);
             notifRepository.save(notif);

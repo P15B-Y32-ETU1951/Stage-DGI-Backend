@@ -22,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.core.io.Resource;
 
 import com.example.Angular.Entity.Demande;
-import com.example.Angular.Entity.Notif;
+import com.example.Angular.Entity.Notif_DPR_SAF;
 import com.example.Angular.Entity.Planification;
 import com.example.Angular.Entity.Rapport;
 import com.example.Angular.Entity.Rejet;
@@ -214,7 +214,7 @@ public class DPRController {
 
     @GetMapping("/notif")
     public ResponseEntity<?> notif() {
-        List<Notif> notifs = notifService.getNewNotifs();
+        List<Notif_DPR_SAF> notifs = notifService.getNewNotifs();
         return ResponseEntity.ok(notifs);
     }
 

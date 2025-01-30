@@ -3,23 +3,24 @@ package com.example.Angular.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.Angular.Entity.Notif_DPR_SAF;
+import com.example.Angular.Entity.Notif_CHEF_SERVICE;
+import com.example.Angular.repository.NotifChefServiceRepository;
 import com.example.Angular.repository.NotifRepository;
 
 import java.util.List;
 
 @Service
-public class NotifService {
+public class NotifChefServiceService {
     @Autowired
-    NotifRepository notifRepository;
+    NotifChefServiceRepository notifRepository;
 
-    public List<Notif_DPR_SAF> getNewNotifs() {
+    public List<Notif_CHEF_SERVICE> getNewNotifs() {
         return notifRepository.findByRecent(true);
     }
 
     public void setSeen(List<Integer> notifs) {
         for (Integer id : notifs) {
-            Notif_DPR_SAF notif = notifRepository.findById(id).get();
+            Notif_CHEF_SERVICE notif = notifRepository.findById(id).get();
             notif.setRecent(false);
             notifRepository.save(notif);
         }
