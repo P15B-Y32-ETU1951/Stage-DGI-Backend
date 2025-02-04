@@ -1,5 +1,6 @@
 package com.example.Angular.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +12,14 @@ import com.example.Angular.Entity.Notif_CHEF_SERVICE;
 import com.example.Angular.Entity.Notif_DPR_SAF;
 import com.example.Angular.Entity.Services;
 import com.example.Angular.Entity.Statut;
+import com.example.Angular.Entity.StatutDemande;
 import com.example.Angular.Entity.Utilisateur;
 import com.example.Angular.dto.DemandeRequest;
 import com.example.Angular.repository.DemandeRepository;
 import com.example.Angular.repository.NotifChefServiceRepository;
 import com.example.Angular.repository.NotifRepository;
 import com.example.Angular.repository.ServiceRepository;
+import com.example.Angular.repository.StatutDemandeRepository;
 import com.example.Angular.repository.StatutRepository;
 import com.example.Angular.repository.UtilisateurRepository;
 
@@ -30,6 +33,9 @@ public class DemandeService {
 
     @Autowired
     StatutRepository statutRepository;
+
+    @Autowired
+    StatutDemandeRepository statutDemandeRepository;
 
     @Autowired
     UtilisateurRepository utilisateurRepository;
@@ -52,6 +58,11 @@ public class DemandeService {
         demande.setStatut(statut);
         demande.setUtilisateur(user);
         Demande d = demoRepository.save(demande);
+        StatutDemande statutDemande = new StatutDemande();
+        statutDemande.setDemande(d);
+        statutDemande.setStatut(statut);
+        statutDemande.setDate_changement(LocalDateTime.now());
+        statutDemandeRepository.save(statutDemande);
         if (request.getId_statut() == 1) {
             Notif_CHEF_SERVICE notif = new Notif_CHEF_SERVICE();
             notif.setDemande(d);

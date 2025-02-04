@@ -39,4 +39,8 @@ public class StatutService {
         return statutDemandeRepository.findByDemandeIdAndStatutId(idDemande, id_statut);
     }
 
+    public List<StatutDemande> findAllStatutDemandes() {
+        return statutDemandeRepository.findAll();
+    }
+
 }

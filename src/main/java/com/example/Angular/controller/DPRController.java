@@ -1,15 +1,12 @@
 package com.example.Angular.controller;
 
-import java.time.LocalDateTime;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpStatus;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,23 +16,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.core.io.Resource;
 
 import com.example.Angular.Entity.Demande;
 import com.example.Angular.Entity.Notif_DPR_SAF;
 import com.example.Angular.Entity.Planification;
-import com.example.Angular.Entity.Rapport;
 import com.example.Angular.Entity.Rejet;
 import com.example.Angular.Entity.Ressource;
-import com.example.Angular.Entity.RessourceTravaux;
 import com.example.Angular.Entity.Statut;
 import com.example.Angular.Entity.StatutDemande;
-import com.example.Angular.Entity.Travaux;
 import com.example.Angular.dto.ApprovisionDTO;
 import com.example.Angular.dto.PlanificationRequest;
-import com.example.Angular.dto.RapportRequest;
 import com.example.Angular.dto.RejectRequest;
-import com.example.Angular.dto.RessourceDTO;
 import com.example.Angular.dto.StatutDemandeRequest;
 import com.example.Angular.repository.DemandeRepository;
 import com.example.Angular.repository.PlanificationRepository;
@@ -233,7 +224,10 @@ public class DPRController {
     public ResponseEntity<?> getStatistiqueDemande() {
         return ResponseEntity.ok(demandeRepository.findAll());
     }
-
+    @GetMapping("/statistique/allstatutdemandes")
+    public ResponseEntity<?> getAllStatutdemande() {
+        return ResponseEntity.ok(statutService.findAllStatutDemandes());
+    }
     @PostMapping("/rapport")
     public ResponseEntity<?> uploadRapport(
             @RequestParam("file") MultipartFile file,
