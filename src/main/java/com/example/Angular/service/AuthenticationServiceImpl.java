@@ -1,20 +1,15 @@
 package com.example.Angular.service;
 
-import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Optional;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.token.Token;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.example.Angular.Entity.ConfirmationToken;
 import com.example.Angular.Entity.PasswordValidator;
@@ -31,8 +26,6 @@ import com.example.Angular.repository.ConfirmationTokenRepository;
 import com.example.Angular.repository.ServiceRepository;
 import com.example.Angular.repository.UtilisateurRepository;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -162,6 +155,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
         jwtAuthenticationResponse.setToken(jwt);
+        jwtAuthenticationResponse.setToken_expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7));
         jwtAuthenticationResponse.setRefreshToken(refreshToken);
         jwtAuthenticationResponse.setRole(user.getRole().name());
         jwtAuthenticationResponse.setEnabled(user.isEnabled());
