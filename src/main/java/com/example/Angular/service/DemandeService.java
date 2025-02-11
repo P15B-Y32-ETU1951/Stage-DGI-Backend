@@ -1,5 +1,6 @@
 package com.example.Angular.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import com.example.Angular.Entity.Notif_DPR_SAF;
 import com.example.Angular.Entity.Services;
 import com.example.Angular.Entity.Statut;
 import com.example.Angular.Entity.StatutDemande;
+import com.example.Angular.Entity.Travaux;
 import com.example.Angular.Entity.Utilisateur;
 import com.example.Angular.dto.DemandeRequest;
 import com.example.Angular.repository.DemandeRepository;
@@ -87,8 +89,27 @@ public class DemandeService {
     }
 
     public List<Demande> findAllDemandesByStatut(int idStatut) {
-        return demoRepository.findAllByStatut_Id(idStatut);
-
+        List<Demande> demandes = demoRepository.findAllByStatut_Id(idStatut);
+        for(Demande demande : demandes) {
+            if(demande.getPlanification() != null) {
+                LocalDate datedebut=LocalDate.now();
+                LocalDate datefin=LocalDate.now();
+                List<Travaux> travaux = demande.getTravaux();
+                for (Travaux travaux1 : travaux) {
+                    if(travaux1.getDateDebut().isBefore(datedebut)){
+                        datedebut=travaux1.getDateDebut();
+                    }
+                    if(travaux1.getDateFin().isAfter(datefin)){
+                        datefin=travaux1.getDateFin();
+                    }
+                }
+                demande.getPlanification().setDateDebut(datedebut);
+                demande.getPlanification().setDateFin(datefin);
+                demoRepository.save(demande);
+            }
+        }
+        List<Demande> result =demoRepository.findAllByStatut_Id(idStatut);
+        return result;
     }
 
     public Demande findById(int id) {
