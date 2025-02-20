@@ -158,6 +158,14 @@ public class DPRController {
     public ResponseEntity<?> addRessource(@RequestBody Ressource ressource) {
         return ResponseEntity.ok(ressourceService.saveRessource(ressource));
     }
+    @PostMapping("/ressource/modifier")
+    public ResponseEntity<?> EditRessource(@RequestBody Ressource ressource) {
+        Ressource ressource1 = ressourceService.findRessourceById(ressource.getId());
+        ressource1.setQuantite(ressource.getQuantite());
+        ressource1.setValeurUnitaire(ressource.getValeurUnitaire());
+        ressource1.setNom(ressource.getNom());
+        return ResponseEntity.ok(ressourceService.saveRessource(ressource1));
+    }
 
     @PostMapping("/ressource/approvisionner")
     public ResponseEntity<?> approvisionnerRessource(@RequestBody ApprovisionDTO approvisionDTO) {
