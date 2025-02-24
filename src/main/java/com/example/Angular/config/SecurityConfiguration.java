@@ -1,5 +1,7 @@
 package com.example.Angular.config;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -56,7 +58,8 @@ public class SecurityConfiguration {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.addAllowedOrigin("http://localhost:3000"); // Change l'origineselon tes besoins
+        configuration.setAllowedOriginPatterns(List.of("http://192.168.88.*", "http://localhost:3000"));
+        // Change l'origine selon tes besoins
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*"); // Ou spécifie les méthodes que tusouhaites autoriser
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
